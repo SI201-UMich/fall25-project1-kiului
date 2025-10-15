@@ -1,13 +1,12 @@
 # SI 201: Project 1 — Data Analysis (Penguins)
 # Name: Hong Kiu Lui
-# Student ID: TBD # <-- replace with your UM ID to satisfy rubric
-# Email: ok
+# Student ID: 3212 6869
+# Email: kiului@umich.edu
 # Collaborators: None
-# GenAI usage: Used ChatGPT (GPT-5 Thinking) for planning, code review, and diagram generation.
+# GenAI usage: Used ChatGPT for planning code logic and diagram generation.
 
 
 import csv
-import math
 
 #cleaning data
 
@@ -202,12 +201,52 @@ def calc_heaviest_species_per_island(rows):
 
     return results
 
+#write into csv
+
+def write_avg_mass_csv(results, out_path):
+    """
+    Write species-sex averages to CSV:
+      species,sex,avg_body_mass_g,n
+    """
+    fields = ["species", "sex", "avg_body_mass_g", "n"]
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        for row in results:
+            w.writerow(row)
 
 
+def write_heaviest_csv(results, out_path):
+    """
+    Write heaviest species per island to CSV:
+      island,species,avg_body_mass_g,n
+    """
+    fields = ["island", "species", "avg_body_mass_g", "n"]
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        for row in results:
+            w.writerow(row)
 
 
-
-
+def write_summary_txt(avg_results, heavy_results, out_path):
+    """
+    Simple human-readable text summary.
+    """
+    lines = []
+    lines.append("Penguins Project — Summary")
+    lines.append("")
+    lines.append("Average body mass by (species, sex):")
+    for r in avg_results:
+        lines.append("- " + r["species"] + " (" + r["sex"] + "): " +
+                     str(r["avg_body_mass_g"]) + " g (n=" + str(r["n"]) + ")")
+    lines.append("")
+    lines.append("Heaviest species per island (by average mass):")
+    for r in heavy_results:
+        lines.append("- " + r["island"] + ": " + r["species"] +
+                     " — " + str(r["avg_body_mass_g"]) + " g (n=" + str(r["n"]) + ")")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
 
 
@@ -296,6 +335,27 @@ def test_calc_heaviest_species_per_island():
     for r in res:
         assert isinstance(r["avg_body_mass_g"], (int, float))
 
+def main():
+    
+    #csv_path = "/Users/hongkiului/Desktop/si201/fall25-project1-kiului/penguins.csv"
+    
+    csv_path = input("Enter the full path to your penguins.csv file: ").strip()
+
+
+    rows = load_penguins(csv_path)
+    clean = filter_valid_rows(rows)
+
+    avg = calc_avg_mass_by_species_sex(clean)
+    heavy = calc_heaviest_species_per_island(clean)
+
+    write_avg_mass_csv(avg, "results_avg_mass.csv")
+    write_heaviest_csv(heavy, "results_heaviest.csv")
+    write_summary_txt(avg, heavy, "results_summary.txt")
+
+    print("Done! Files written and tests passed.")
+
+if __name__ == "__main__":
+    main()
 
 
 
