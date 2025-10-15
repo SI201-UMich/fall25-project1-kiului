@@ -8,12 +8,11 @@
 
 import csv
 
-#cleaning data
+#Cleaning data
 
 def load_penguins(csv_file):
     """
     Read CSV and return a list of dictionaries (one dict per row).
-    Also normalizes types and strings using _coerce_types().
     """
     rows = []
     with open(csv_file, newline="", encoding="utf-8") as f:
@@ -25,14 +24,10 @@ def load_penguins(csv_file):
 def _coerce_types(row):
     """
     Helper: clean strings and convert numbers.
-    - Blank strings or 'na'/'nan'/'none' become None.
-    - body_mass_g, flipper_length_mm -> int (if possible)
-    - bill_length_mm, bill_depth_mm -> float (if possible)
-    - species, island, sex -> title-case strings for consistency
     """
     clean = {}
 
-    # 1) normalize blanks / NA-like strings
+    # Normalize blanks / NA strings
     for k, v in row.items():
         if isinstance(v, str):
             v = v.strip()
@@ -40,7 +35,7 @@ def _coerce_types(row):
                 v = None
         clean[k] = v
 
-    # 2) convert numbers (best effort)
+    # Convert numbers (best effort)
     int_fields = ["body_mass_g", "flipper_length_mm"]
     float_fields = ["bill_length_mm", "bill_depth_mm"]
 
@@ -66,7 +61,7 @@ def _coerce_types(row):
 
 def filter_valid_rows(rows):
     """
-    Keep only rows that have all the fields we need for BOTH calculations:
+    Keep only rows that have all the fields we need for both calculations:
     species, island, sex, body_mass_g
     """
     required = ["species", "island", "sex", "body_mass_g"]
@@ -81,7 +76,7 @@ def filter_valid_rows(rows):
             clean_rows.append(r)
     return clean_rows
 
-#helper functions
+#Helper functions
 
 
 def _group_by_species_sex(rows):
@@ -120,12 +115,11 @@ def _group_by_island_species(rows):
         nested[isl][sp].append(bm)
     return nested
 
-#calculations
+#Calculations
 def calc_avg_mass_by_species_sex(rows):
     """
     Return a list of dictionaries with:
       species, sex, avg_body_mass_g. 
-    One result per (species, sex).
     """
     groups = _group_by_species_sex(rows)
     results = []
@@ -201,7 +195,7 @@ def calc_heaviest_species_per_island(rows):
 
     return results
 
-#write into csv
+#Write into csv
 
 def write_avg_mass_csv(results, out_path):
     """
@@ -230,9 +224,7 @@ def write_heaviest_csv(results, out_path):
 
 
 def write_summary_txt(avg_results, heavy_results, out_path):
-    """
-    Simple human-readable text summary.
-    """
+   
     lines = []
     lines.append("Penguins Project — Summary")
     lines.append("")
@@ -251,7 +243,7 @@ def write_summary_txt(avg_results, heavy_results, out_path):
 
 
 
-#test cases
+#Test cases
 
 TEST_SAMPLE = [
     {"species": "Adelie",   "island": "Torgersen", "sex": "Male",   "body_mass_g": 3700},
@@ -267,7 +259,7 @@ TEST_SAMPLE = [
 
 
 def test_calc_avg_mass_by_species_sex():
-    # Use only rows that have a sex AND body mass for this test
+    # Use only rows that have a sex and body mass for this test
     rows = []
     for r in TEST_SAMPLE:
         if r["sex"] is not None and r["body_mass_g"] is not None:
@@ -338,7 +330,7 @@ def test_calc_heaviest_species_per_island():
 def main():
     
     #csv_path = "/Users/hongkiului/Desktop/si201/fall25-project1-kiului/penguins.csv"
-    
+    #the comment above is hardcoded, since simple doing csv_path= 'penguins.csv' did not work for me, but to avoid hardcoding i used an input function instead so instructors can also run the code
     csv_path = input("Enter the full path to your penguins.csv file: ").strip()
 
 
