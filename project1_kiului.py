@@ -3,7 +3,7 @@
 # Student ID: 3212 6869
 # Email: kiului@umich.edu
 # Collaborators: None
-# GenAI usage: Used ChatGPT for planning code logic and diagram generation.
+# GenAI usage: Used ChatGPT in the planning phase to plan code logic, helped write descriptions/comments for each function, and diagram generation.
 
 
 import csv
@@ -307,7 +307,11 @@ def test_calc_heaviest_species_per_island():
     # General cases
     ok1 = False
     for r in res:
-        if r["island"] == "Biscoe" and r["species"] == "Gentoo" and r["avg_body_mass_g"] == 5100:
+        if (
+            r["island"] == "Biscoe"
+            and r["species"] == "Gentoo"
+            and r["avg_body_mass_g"] == 4966.67  # (5200+5000+4700)/3
+        ):
             ok1 = True
     assert ok1
 
@@ -333,9 +337,14 @@ def main():
     #the comment above is hardcoded, since simple doing csv_path= 'penguins.csv' did not work for me, but to avoid hardcoding i used an input function instead so instructors can also run the code
     csv_path = input("Enter the full path to your penguins.csv file: ").strip()
 
-
-    rows = load_penguins(csv_path)
+    try:
+        rows = load_penguins(csv_path)
+    except FileNotFoundError:
+        print("Could not open file:", csv_path)
+        print("Tip: drag the CSV into the terminal to paste the full path.")
+        return
     clean = filter_valid_rows(rows)
+
 
     avg = calc_avg_mass_by_species_sex(clean)
     heavy = calc_heaviest_species_per_island(clean)
@@ -348,7 +357,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
+    print("\nRunning test cases on sample data...")
+    test_calc_avg_mass_by_species_sex()
+    test_calc_heaviest_species_per_island()
+    print("All test cases passed!")
 
